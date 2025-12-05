@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report - AquaSentinel</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app-view">
+        <div class="mobile-app-header">
+            <button class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+            <span style="font-weight: 800; font-size: 1.2rem; color: #009688;">AquaSentinel</span>
+        </div>
+        <div class="sidebar-overlay"></div>
+
+        <aside id="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-water" style="color: var(--primary);"></i> <span>AquaSentinel</span>
+                <i class="fa-solid fa-xmark close-sidebar-btn" style="display: none;"></i>
+            </div>
+            <nav class="nav-menu">
+                <a href="dashboard.html" class="menu-btn"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+                <a href="map.html" class="menu-btn"><i class="fa-solid fa-map-location-dot"></i> Coastal Map</a>
+                <a href="report.html" class="menu-btn active-nav"><i class="fa-solid fa-pen-to-square"></i> Submit Report</a>
+                <a href="profile.html" class="menu-btn"><i class="fa-solid fa-user"></i> My Profile</a>
+                <button onclick="app.logout()" class="menu-btn logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+            </nav>
+        </aside>
+
+        <main>
+            <div style="max-width: 700px; margin: 0 auto;">
+                <h2 class="page-title text-center" style="text-align: center; margin-bottom: 20px;">New Incident Report</h2>
+                <div class="card">
+                    <form id="report-form">
+                        <div class="report-type-grid" style="display: flex; gap: 15px; margin-bottom: 25px;">
+                            <label class="type-label" style="flex: 1; cursor: pointer;">
+                                <input type="radio" name="reportType" value="pollution" checked onchange="app.toggleFormFields()" style="display:none;">
+                                <div class="type-option pollution" style="border: 2px solid #f3f4f6; padding: 20px; border-radius: 16px; text-align: center; transition: all 0.2s;">
+                                    <i class="fa-solid fa-triangle-exclamation" style="font-size: 1.8rem; color: #ef4444; margin-bottom: 8px;"></i><br><span style="font-weight: 600;">Pollution</span>
+                                </div>
+                            </label>
+                            <label class="type-label" style="flex: 1; cursor: pointer;">
+                                <input type="radio" name="reportType" value="marine" onchange="app.toggleFormFields()" style="display:none;">
+                                <div class="type-option marine" style="border: 2px solid #f3f4f6; padding: 20px; border-radius: 16px; text-align: center; transition: all 0.2s;">
+                                    <i class="fa-solid fa-otter" style="font-size: 1.8rem; color: #0ea5e9; margin-bottom: 8px;"></i><br><span style="font-weight: 600;">Marine Life</span>
+                                </div>
+                            </label>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>Location (Click map)</label>
+                            <input type="text" id="input-location" placeholder="Select on map..." required>
+                            <div id="picker-map" style="height: 250px; width: 100%; border-radius: 16px; margin-top: 10px; border: 2px solid #f3f4f6; z-index: 1;"></div>
+                        </div>
+
+                        <div class="input-group" style="margin-top: 20px;">
+                            <label>Place Name</label>
+                            <input type="text" id="input-placename" placeholder="e.g. Mangima River" required>
+                        </div>
+
+                        <div class="input-group"><label>Evidence Photo</label><input type="file" id="input-image" accept="image/*"></div>
+                        
+                        <div id="fields-pollution">
+                            <div class="input-row">
+                                <div class="input-group" style="flex: 1;">
+                                    <label>Waste Type</label>
+                                    <select id="input-waste"><option value="Plastic">Plastic</option><option value="Metal">Metal</option><option value="Oil">Oil</option><option value="Net">Ghost Nets</option><option value="Chemical">Chemical/Sewage</option></select>
+                                </div>
+                                <div class="input-group" style="flex: 1;">
+                                    <label>Severity</label>
+                                    <select id="input-severity"><option value="Low">Low</option><option value="Medium">Medium</option><option value="High">High</option></select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="fields-marine" class="hidden-section">
+                            <div class="input-group"><label>Species</label><input type="text" id="input-species" placeholder="e.g. Sea Turtle"></div>
+                            <div class="input-row">
+                                <div class="input-group" style="flex: 1;"><label>Quantity</label><input type="number" id="input-quantity" value="1"></div>
+                                <div class="input-group" style="flex: 1;">
+                                    <label>Condition</label>
+                                    <select id="input-condition"><option value="Healthy">Healthy</option><option value="Injured">Injured</option><option value="Stranded">Stranded</option><option value="Dead">Deceased</option></select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 30px; display: flex; gap: 10px;">
+                            <button type="submit" id="btn-submit-report" class="btn btn-primary" style="flex: 2;">Submit Report</button>
+                            <button type="button" id="btn-mark-done" class="btn hidden-section" onclick="app.markAsDone()" style="color: white; flex: 2; border: none; font-weight: 800;"></button>
+                            <button type="button" id="btn-cancel-edit" class="btn btn-outline hidden-section" onclick="app.cancelEdit()" style="flex: 1;">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <style>
+        input[type="radio"]:checked + .type-option.pollution { border-color: #ef4444; background: #fef2f2; }
+        input[type="radio"]:checked + .type-option.marine { border-color: #0ea5e9; background: #f0f9ff; }
+    </style>
+    <script src="script.js"></script>
+</body>
+</html>
