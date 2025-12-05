@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - AquaSentinel</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app-view">
+        <div class="mobile-app-header">
+            <button class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+            <span style="font-weight: 800; font-size: 1.2rem; color: #009688;">AquaSentinel</span>
+        </div>
+        <div class="sidebar-overlay"></div>
+
+        <aside id="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-water" style="color: var(--primary);"></i> <span>AquaSentinel</span>
+                <i class="fa-solid fa-xmark close-sidebar-btn" style="display: none;"></i>
+            </div>
+            <nav class="nav-menu">
+                <a href="dashboard.html" class="menu-btn active-nav"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+                <a href="map.html" class="menu-btn"><i class="fa-solid fa-map-location-dot"></i> Coastal Map</a>
+                <a href="report.html" class="menu-btn"><i class="fa-solid fa-pen-to-square"></i> Submit Report</a>
+                <a href="profile.html" class="menu-btn"><i class="fa-solid fa-user"></i> My Profile</a>
+                <button onclick="app.logout()" class="menu-btn logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+            </nav>
+        </aside>
+
+        <main>
+            <div style="margin-bottom: 30px;">
+                <h2 class="page-title">Mission Dashboard</h2>
+                <p style="color: var(--text-light);">Welcome back, <span id="user-name-display" style="color: var(--primary); font-weight: 700;">Ranger</span> 👋</p>
+            </div>
+
+            <div class="grid-3">
+                <div class="card weather-widget">
+                    <div class="widget-title"><i class="fa-solid fa-location-arrow"></i> LIVE CONDITIONS</div>
+                    <div class="weather-flex">
+                        <div><span class="weather-temp">--°C</span><div class="weather-loc">Loading...</div></div>
+                        <i class="fa-solid fa-cloud-sun weather-icon"></i>
+                    </div>
+                </div>
+                <div class="card stat-card red">
+                    <div><div class="stat-label">Pollution Reports</div><div class="stat-value" id="stat-pollution">0</div></div>
+                    <div class="stat-icon"><i class="fa-solid fa-trash-can"></i></div>
+                </div>
+                <div class="card stat-card teal">
+                    <div><div class="stat-label">Marine Sightings</div><div class="stat-value" id="stat-marine">0</div></div>
+                    <div class="stat-icon"><i class="fa-solid fa-fish-fins"></i></div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="font-size: 1.1rem; font-weight: 700;">Waste Analysis</h3>
+                        <button class="btn-outline" onclick="app.openWasteDetails()" style="padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; cursor: pointer;">
+                                View Details
+                        </button>
+                    </div>
+                    <div class="chart-container"><canvas id="wasteChart"></canvas></div>
+                </div>
+                <div class="card">
+                    <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 20px;">Recent Activity</h3>
+                    <div id="activity-feed" class="feed-container"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <div id="waste-modal" class="modal-overlay hidden-section">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <span style="font-weight: 700; font-size: 1.2rem; color: #1f2937;">Waste Breakdown</span>
+                <span class="close-modal" onclick="app.closeWasteModal()" style="cursor: pointer; font-size: 1.5rem;"><i class="fa-solid fa-xmark"></i></span>
+            </div>
+            
+            <div id="waste-stats-list" style="display: flex; flex-direction: column; gap: 15px;"></div>
+
+            <button onclick="app.closeWasteModal()" class="btn btn-primary" style="width: 100%; margin-top: 25px;">Close</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
