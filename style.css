@@ -224,3 +224,34 @@ main {
 }
 
 .legend-item i { font-size: 1.2rem; }
+
+/* =========================================
+   📱 MOBILE RESPONSIVENESS
+   ========================================= */
+.mobile-app-header { 
+    display: none; 
+    position: fixed; top: 0; left: 0; width: 100%; height: 60px; /* Compact */
+    background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); 
+    z-index: 1100; align-items: center; justify-content: space-between; 
+    padding: 0 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.mobile-menu-btn { background: none; border: none; font-size: 1.4rem; color: var(--text-dark); cursor: pointer; padding: 5px; }
+.sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(3px); z-index: 1050; }
+.hidden-section { display: none !important; }
+
+@media (max-width: 1024px) {
+    #sidebar { transform: translateX(-100%); background: white; z-index: 1200; box-shadow: 5px 0 25px rgba(0,0,0,0.1); }
+    #sidebar.open { transform: translateX(0); }
+    .sidebar-overlay.open { display: block; }
+    
+    main { margin-left: 0; width: 100%; padding: 80px 20px 20px 20px; }
+    
+    .mobile-app-header { display: flex; }
+    .close-sidebar-btn { display: block !important; font-size: 1.5rem; cursor: pointer; color: var(--text-dark); margin-left: auto; }
+    
+    .grid-2, .grid-landing { grid-template-columns: 1fr; gap: 20px; }
+    .input-row { flex-direction: column; gap: 0; }
+    
+    .hero-title { font-size: 3rem; }
+    .page-title { font-size: 1.8rem; }
+}
