@@ -317,4 +317,137 @@ const app = {
     closeWasteModal() {
         document.getElementById('waste-modal').classList.add('hidden-section');
     },
+
+    loadPickerMap() {
+        const map = L.map('picker-map').setView([8.37, 124.86], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        let currentMarker = null;
+
+        map.on('click', (e) => {
+            const lat = e.latlng.lat.toFixed(6);
+            const lng = e.latlng.lng.toFixed(6);
+
+            document.getElementById('input-location').value = `${lat}, ${lng}`;
+
+            if (currentMarker) map.removeLayer(currentMarker);
+
+            currentMarker = L.marker(e.latlng, {icon: this.createPin('#3b82f6')}).addTo(map)
+                .bindPopup("<b>Selected Location</b>")
+                .openPopup();
+        });
+
+        setTimeout(() => map.invalidateSize(), 200);
+    },
+
+    toggleFormFields() {
+        const type = document.querySelector('input[name="reportType"]:checked').value;
+        document.getElementById('fields-pollution').classList.toggle('hidden-section', type !== 'pollution');
+        document.getElementById('fields-marine').classList.toggle('hidden-section', type !== 'marine');
+    },
+
+    handleReport(e) {
+        e.preventDefault();
+        const type = document.querySelector('input[name="reportType"]:checked').value;
+        const locStr = document.getElementById('input-location').value;
+        const placeName = document.getElementById('input-placename').value;
+        
+        if(!locStr || locStr.trim() === "") return this.showToast('Please select a location on the map!', 'error');
+
+        const coords = locStr.split(',').map(n => parseFloat(n));
+        const file = document.getElementById('input-image').files[0];
+        
+        if(coords.length!==2 || isNaN(coords[0])) return this.showToast('Invalid Coordinates!', 'error');
+        
+        const loc = [coords[0], coords[1]];
+        
+        const processReport = (imgData) => {
+            const commonData = {
+                date: new Date().toISOString(), location: loc, placeName: placeName,
+                userId: this.currentUser.email, type: type, image: imgData,
+                status: 'Pending'
+            };
+
+            let specificData = {};
+            if(type === 'pollution') {
+                specificData.wasteType = document.getElementById('input-waste').value;
+                specificData.severity = document.getElementById('input-severity').value;
+            } else {
+                specificData.species = document.getElementById('input-species').value;
+                specificData.quantity = document.getElementById('input-quantity').value;
+                specificData.condition = document.getElementById('input-condition').value;
+            }
+
+            if (this.editingId) {
+                const updatedObj = { id: this.editingId, ...commonData, ...specificData };
+                DataManager.updateReport(updatedObj);
+                this.showToast('Report Updated Successfully!');
+            } else {
+                const newObj = { id: Date.now(), ...commonData, ...specificData };
+                DataManager.saveReport(newObj);
+                this.showToast('Report Saved Successfully!');
+            }
+            setTimeout(() => window.location.href = 'map.html', 1000);
+        };
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = function() { processReport(reader.result); }
+            reader.readAsDataURL(file);
+        } else {
+            processReport(null);
+        }
+    },
+    
+    loadReportForEdit(id) {
+        const r = DataManager.get('aqua_reports').find(x => x.id === id);
+        if (!r) return;
+        this.editingId = id;
+        document.querySelector(`input[name="reportType"][value="${r.type}"]`).checked = true;
+        this.toggleFormFields();
+        document.getElementById('input-placename').value = r.placeName;
+        document.getElementById('input-location').value = `${r.location[0]}, ${r.location[1]}`;
+        
+        if (r.type === 'pollution') {
+            document.getElementById('input-waste').value = r.wasteType;
+            document.getElementById('input-severity').value = r.severity;
+        } else {
+            document.getElementById('input-species').value = r.species;
+            document.getElementById('input-quantity').value = r.quantity;
+            if(document.getElementById('input-condition')) {
+                document.getElementById('input-condition').value = r.condition || 'Healthy';
+            }
+        }
+        
+        document.getElementById('btn-submit-report').innerText = 'UPDATE REPORT';
+        document.getElementById('btn-cancel-edit').classList.remove('hidden-section');
+        
+        const doneBtn = document.getElementById('btn-mark-done');
+        if(doneBtn) {
+            doneBtn.classList.remove('hidden-section');
+            if (r.type === 'pollution') {
+                doneBtn.style.background = '#10b981'; 
+                doneBtn.innerHTML = '<i class="fa-solid fa-broom"></i> MARK AS CLEANED';
+            } else {
+                doneBtn.style.background = '#0ea5e9'; 
+                doneBtn.innerHTML = '<i class="fa-solid fa-clipboard-check"></i> MARK AS VERIFIED';
+            }
+        }
+    },
+
+    markAsDone() {
+        if(this.editingId) {
+            const report = DataManager.get('aqua_reports').find(x => x.id === this.editingId);
+            if(report) {
+                report.status = 'Resolved';
+                DataManager.updateReport(report);
+                this.showToast('Great job! Report status updated.');
+                setTimeout(() => window.location.href = 'profile.html', 1500);
+            }
+        }
+    },
+
+    cancelEdit() { window.location.href = 'report.html'; },
 }
