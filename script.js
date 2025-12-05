@@ -469,4 +469,49 @@ const app = {
                     .openPopup();
             });
         }
+                setTimeout(() => { this.map.invalidateSize(); }, 200);
+
+        this.markers.forEach(m => this.map.removeLayer(m));
+        this.markers = [];
+
+        const allReports = DataManager.get('aqua_reports');
+        const r = allReports.filter(x => x.userId === this.currentUser.email);
+
+        r.forEach(x => {
+            if(!x.location || isNaN(x.location[0])) return;
+            
+            const pinColor = x.type === 'pollution' ? '#ef4444' : '#14b8a6';
+            const customIcon = this.createPin(pinColor);
+
+            let popupContent = `
+                <div style="min-width: 150px;">
+                    <b style="color:#0f172a; font-size:1rem;">${x.type.toUpperCase()}</b><br>
+                    <span style="color:#64748b; font-size:0.9rem;">${x.placeName}</span><br>
+                    <span style="font-weight:600; color:#334155;">${x.wasteType || x.species}</span>
+                    <br><span style="font-size:0.85rem; color:#ef4444; font-weight:600;">
+                        ${x.severity || x.condition || ''}
+                    </span>
+                </div>
+            `;
+            if (x.image) {
+                popupContent += `<img src="${x.image}" style="width:100%; height:120px; object-fit:cover; margin-top:10px; border-radius:8px; border:1px solid #e2e8f0;">`;
+            }
+
+            const m = L.marker(x.location, {icon: customIcon}).addTo(this.map)
+                .bindPopup(popupContent);
+            this.markers.push(m);
+        });
+
+        if(this.markers.length > 0) {
+            setTimeout(() => this.map.fitBounds(L.featureGroup(this.markers).getBounds(), {padding:[50,50]}), 300);
+        }
+    },
+
+    createPin(color) {
+        return L.divIcon({
+            className: 'bg-transparent',
+            html: `<i class="fa-solid fa-location-dot fa-3x" style="color: ${color}; filter: drop-shadow(3px 5px 2px rgba(0,0,0,0.3)); display:block;"></i>`,
+            iconSize: [30, 42], iconAnchor: [15, 42], popupAnchor: [0, -45]
+        });
+    },
 }
