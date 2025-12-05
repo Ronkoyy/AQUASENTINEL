@@ -220,4 +220,101 @@ const app = {
             setTimeout(() => window.location.href = 'login.html', 1500);
         } else { alert('Email exists'); }
     },
+
+       loadDash() {
+        const allReports = DataManager.get('aqua_reports');
+        const r = allReports.filter(x => x.userId === this.currentUser.email);
+
+        document.getElementById('stat-pollution').innerText = r.filter(x => x.type === 'pollution').length;
+        document.getElementById('stat-marine').innerText = r.filter(x => x.type === 'marine').length;
+        
+        const feed = document.getElementById('activity-feed');
+        feed.innerHTML = '';
+        
+        if (r.length === 0) {
+            feed.innerHTML = '<div style="color:#94a3b8; text-align:center; padding:20px;">No activity yet.</div>';
+        }
+
+        r.slice(-5).reverse().forEach(x => {
+            const color = x.type === 'pollution' ? 'red' : 'teal';
+            
+            let statusBadge = '<span style="color:#ef4444; font-weight:bold; font-size:0.8rem; margin-left:8px;"><i class="fa-solid fa-clock"></i> PENDING</span>';
+            if (x.status === 'Resolved') {
+                if (x.type === 'pollution') {
+                    statusBadge = '<span style="color:#10b981; font-weight:bold; font-size:0.8rem; margin-left:8px;"><i class="fa-solid fa-check-circle"></i> CLEANED</span>';
+                } else {
+                    statusBadge = '<span style="color:#0ea5e9; font-weight:bold; font-size:0.8rem; margin-left:8px;"><i class="fa-solid fa-check-circle"></i> VERIFIED</span>';
+                }
+            }
+
+            feed.innerHTML += `<div style="display:flex; gap:10px; padding:12px; background:#f8fafc; border-left:4px solid var(--color-${color}); margin-bottom:10px; border-radius:4px; align-items:center;">
+                <div style="flex:1;">
+                    <strong>${x.type.toUpperCase()}</strong> @ ${x.placeName} ${statusBadge}
+                    <br><small style="color:#64748b;">${x.wasteType || x.species}</small>
+                </div>
+            </div>`;
+        });
+
+        const ctx = document.getElementById('wasteChart').getContext('2d');
+        if(this.chart) this.chart.destroy();
+        const counts = {};
+        r.filter(x => x.type === 'pollution').forEach(x => counts[x.wasteType] = (counts[x.wasteType]||0)+1);
+        
+        this.chart = new Chart(ctx, {
+            type: 'doughnut',
+            data: { labels: Object.keys(counts), datasets: [{ data: Object.values(counts), backgroundColor: ['#009688', '#26a69a', '#80cbc4', '#546e7a', '#ff7043'] }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
+        });
+
+        const apiKey = '087c63d4f2bdc8a29e9262521bb2cd38'; 
+        const city = 'Manolo Fortich'; 
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                document.querySelector('.weather-temp').innerText = `${Math.round(data.main.temp)}°C`;
+                document.querySelector('.weather-loc').innerText = data.name;
+                const condition = data.weather[0].main;
+                const iconClass = this.getWeatherIcon(condition);
+                const iconEl = document.querySelector('.weather-icon');
+                iconEl.className = `${iconClass} weather-icon`;
+            })
+            .catch(err => console.error("Weather Error:", err));
+    },
+
+    // ✅ RESTORED: WASTE DETAILS MODAL LOGIC
+    openWasteDetails() {
+        const allReports = DataManager.get('aqua_reports');
+        const myPollution = allReports.filter(x => x.userId === this.currentUser.email && x.type === 'pollution');
+
+        const stats = { 'Plastic': 0, 'Metal': 0, 'Oil': 0, 'Net': 0, 'Chemical': 0 };
+        myPollution.forEach(r => {
+            if (stats[r.wasteType] !== undefined) stats[r.wasteType]++;
+            else stats[r.wasteType] = 1;
+        });
+
+        const container = document.getElementById('waste-stats-list');
+        container.innerHTML = ''; 
+
+        if (myPollution.length === 0) {
+            container.innerHTML = '<p style="text-align:center; color:#9ca3af;">No pollution data recorded yet.</p>';
+        } else {
+            for (const [type, count] of Object.entries(stats)) {
+                if (count > 0) {
+                    container.innerHTML += `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #f9fafb; border-radius: 12px; border: 1px solid #f3f4f6;">
+                            <span style="font-weight: 600; color: #4b5563;">${type}</span>
+                            <span style="font-weight: 800; color: #009688; background: #e0f2f1; padding: 4px 12px; border-radius: 20px;">${count}</span>
+                        </div>
+                    `;
+                }
+            }
+        }
+        document.getElementById('waste-modal').classList.remove('hidden-section');
+    },
+
+    closeWasteModal() {
+        document.getElementById('waste-modal').classList.add('hidden-section');
+    },
 }
