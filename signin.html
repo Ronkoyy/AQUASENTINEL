@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - AquaSentinel</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="auth-bg">
+        <a href="index.html" style="position: absolute; top: 30px; left: 30px; color: white; text-decoration: none; font-weight: 700; z-index: 10; display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-arrow-left"></i> Back to Home
+        </a>
+
+        <div class="auth-card">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h2 style="font-size: 2rem; font-weight: 700; color: #1f2937;">Join the Watch</h2>
+                <p style="color: #6b7280;">Create your Ranger profile</p>
+            </div>
+            
+            <form id="signup-form">
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <input type="text" id="signup-name" required placeholder="Juan Dela Cruz">
+                </div>
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="signup-email" required placeholder="ranger@ocean.org">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="signup-password" required placeholder="Create a strong password">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">REGISTER</button>
+            </form>
+            
+            <div style="margin-top: 25px; text-align: center; font-size: 0.9rem; color: #6b7280;">
+                Already have an account? 
+                <a href="login.html" style="color: var(--primary); font-weight: 700; text-decoration: none;">Login</a>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
