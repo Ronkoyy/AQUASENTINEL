@@ -207,4 +207,17 @@ const app = {
             errorEl.innerText = "Incorrect password."; errorEl.style.display = 'block'; 
         }
     },
+
+        signup(e) {
+        e.preventDefault();
+        const u = new User(
+            document.getElementById('signup-name').value,
+            document.getElementById('signup-email').value,
+            document.getElementById('signup-password').value
+        );
+        if(DataManager.registerUser(u)) {
+            this.showToast('Registered Successfully! Please Login.');
+            setTimeout(() => window.location.href = 'login.html', 1500);
+        } else { alert('Email exists'); }
+    },
 }
