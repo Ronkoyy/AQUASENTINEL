@@ -266,7 +266,7 @@ const app = {
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
         });
 
-        const apiKey = 
+        const apiKey = '087c63d4f2bdc8a29e9262521bb2cd38'; 
         const city = 'Manolo Fortich'; 
         const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
 
