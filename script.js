@@ -266,7 +266,7 @@ const app = {
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
         });
 
-        const apiKey = '087c63d4f2bdc8a29e9262521bb2cd38'; 
+        const apiKey = 
         const city = 'Manolo Fortich'; 
         const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
 
@@ -283,7 +283,7 @@ const app = {
             .catch(err => console.error("Weather Error:", err));
     },
 
-    // ✅ RESTORED: WASTE DETAILS MODAL LOGIC
+    // WASTE DETAILS MODAL LOGIC
     openWasteDetails() {
         const allReports = DataManager.get('aqua_reports');
         const myPollution = allReports.filter(x => x.userId === this.currentUser.email && x.type === 'pollution');
