@@ -109,4 +109,39 @@ const app = {
             });
         }
     },
+
+        getWeatherIcon(condition) {
+        const main = condition.toLowerCase();
+        switch (main) {
+            case 'clear': return 'fa-solid fa-sun';
+            case 'clouds': return 'fa-solid fa-cloud';
+            case 'rain': case 'drizzle': return 'fa-solid fa-cloud-showers-heavy';
+            case 'thunderstorm': return 'fa-solid fa-cloud-bolt';
+            case 'snow': return 'fa-solid fa-snowflake';
+            case 'mist': case 'fog': return 'fa-solid fa-smog';
+            default: return 'fa-solid fa-cloud-sun';
+        }
+    },
+
+    createPin(color) {
+        return L.divIcon({
+            className: 'bg-transparent',
+            html: `<i class="fa-solid fa-location-dot fa-3x" style="color: ${color}; filter: drop-shadow(3px 5px 2px rgba(0,0,0,0.3)); display:block;"></i>`,
+            iconSize: [30, 42], iconAnchor: [15, 42], popupAnchor: [0, -45]
+        });
+    },
+
+    checkSession() {
+        const u = localStorage.getItem('aqua_user');
+        const page = window.location.pathname.split("/").pop();
+        const publicPages = ['index.html', 'login.html', 'signup.html', ''];
+
+        if (u) {
+            this.currentUser = JSON.parse(u);
+            if (publicPages.includes(page)) window.location.href = 'dashboard.html';
+            this.updateUI();
+        } else {
+            if (!publicPages.includes(page)) window.location.href = 'login.html';
+        }
+    },
 }
