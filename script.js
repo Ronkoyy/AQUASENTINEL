@@ -191,4 +191,20 @@ const app = {
             setTimeout(() => div.remove(), 300);
         }, 3000);
     },
+
+        login(e) {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value;
+        const pwd = document.getElementById('login-password').value;
+        const errorEl = document.getElementById('login-error');
+        errorEl.style.display = 'none';
+
+        const user = DataManager.validateUser(email, pwd);
+        if(user) {
+            localStorage.setItem('aqua_user', JSON.stringify(user));
+            window.location.href = 'dashboard.html';
+        } else { 
+            errorEl.innerText = "Incorrect password."; errorEl.style.display = 'block'; 
+        }
+    },
 }
