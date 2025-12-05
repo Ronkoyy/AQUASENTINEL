@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map - AquaSentinel</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app-view">
+        <div class="mobile-app-header">
+            <button class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+            <span style="font-weight: 800; font-size: 1.2rem; color: #009688;">AquaSentinel</span>
+        </div>
+        <div class="sidebar-overlay"></div>
+
+        <aside id="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-water" style="color: var(--primary);"></i> 
+                <span>AquaSentinel</span>
+                <i class="fa-solid fa-xmark close-sidebar-btn" style="display: none;"></i>
+            </div>
+            <nav class="nav-menu">
+                <a href="dashboard.html" class="menu-btn"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+                <a href="map.html" class="menu-btn active-nav"><i class="fa-solid fa-map-location-dot"></i> Coastal Map</a>
+                <a href="report.html" class="menu-btn"><i class="fa-solid fa-pen-to-square"></i> Submit Report</a>
+                <a href="profile.html" class="menu-btn"><i class="fa-solid fa-user"></i> My Profile</a>
+                <button onclick="app.logout()" class="menu-btn logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+            </nav>
+        </aside>
+
+        <main>
+            <h2 class="page-title">Surveillance Map</h2>
+            
+            <div class="card" style="padding: 0; overflow: hidden; height: 750px; border-radius: 16px; position: relative;">
+                
+                <div id="map" style="height: 100%; width: 100%; z-index: 1;"></div>
+
+                <div class="map-legend">
+                    <h4>Map Legend</h4>
+                    
+                    <div class="legend-item">
+                        <i class="fa-solid fa-location-dot" style="color: #ef4444;"></i>
+                        <span>Pollution Report</span>
+                    </div>
+                    
+                    <div class="legend-item">
+                        <i class="fa-solid fa-location-dot" style="color: #14b8a6;"></i>
+                        <span>Marine Sighting</span>
+                    </div>
+                    
+                    <div class="legend-item">
+                        <i class="fa-solid fa-location-dot" style="color: #3b82f6;"></i>
+                        <span>Your Location</span>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
