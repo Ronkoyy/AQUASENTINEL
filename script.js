@@ -450,4 +450,23 @@ const app = {
     },
 
     cancelEdit() { window.location.href = 'report.html'; },
+
+       // 6. MAP PAGE LOGIC
+    // =======================================================
+    loadMap() {
+        if(!this.map) {
+            this.map = L.map('map').setView([8.37, 124.86], 11); 
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(this.map);
+
+            this.map.on('click', (e) => {
+                const lat = e.latlng.lat.toFixed(6);
+                const lng = e.latlng.lng.toFixed(6);
+
+                if (this.tempMarker) this.map.removeLayer(this.tempMarker);
+                
+                this.tempMarker = L.marker(e.latlng, {icon: this.createPin('#3b82f6')}).addTo(this.map)
+                    .bindPopup(`<b>📍 Selected Location</b><br>Lat: ${lat}<br>Lng: ${lng}`)
+                    .openPopup();
+            });
+        }
 }
