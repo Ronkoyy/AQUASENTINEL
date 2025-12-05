@@ -189,3 +189,38 @@ main {
 
 .feed-container { max-height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
 .chart-container { position: relative; height: 300px; width: 100%; }
+
+.map-legend {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    background: rgba(255, 255, 255, 0.85); /* Semi-transparent white */
+    backdrop-filter: blur(12px);           /* Glass Blur */
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    border: 1px solid rgba(255,255,255,0.5);
+    z-index: 500; /* Ensures it sits ON TOP of the map */
+    min-width: 220px;
+}
+
+.map-legend h4 {
+    margin-bottom: 15px;
+    font-weight: 800;
+    color: var(--text-dark);
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+.legend-item i { font-size: 1.2rem; }
