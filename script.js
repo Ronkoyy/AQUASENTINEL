@@ -54,3 +54,59 @@ class DataManager {
         if(idx !== -1) { users[idx] = u; this.set('aqua_users', users); }
     }
 }
+
+const app = {
+    currentUser: null, map: null, chart: null, markers: [], editingId: null, tempMarker: null, deleteId: null,
+
+    init() {
+        this.fixLeafletIcons();
+        DataManager.seed();
+        this.checkSession();
+        
+        const path = window.location.pathname;
+        const page = path.split("/").pop();
+
+        if (page === 'dashboard.html') this.loadDash();
+        if (page === 'map.html') this.loadMap();
+        if (page === 'profile.html') this.loadProfile();
+        
+        if (document.getElementById('picker-map')) this.loadPickerMap();
+        
+        if(document.getElementById('login-form')) document.getElementById('login-form').addEventListener('submit', e => this.login(e));
+        if(document.getElementById('signup-form')) document.getElementById('signup-form').addEventListener('submit', e => this.signup(e));
+        if(document.getElementById('report-form')) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const editId = urlParams.get('edit');
+            if(editId) this.loadReportForEdit(parseInt(editId));
+            document.getElementById('report-form').addEventListener('submit', e => this.handleReport(e));
+        }
+
+        if(document.querySelector('.mobile-menu-btn')) {
+            document.querySelector('.mobile-menu-btn').addEventListener('click', this.toggleSidebar);
+            document.querySelector('.close-sidebar-btn').addEventListener('click', this.toggleSidebar);
+            document.querySelector('.sidebar-overlay').addEventListener('click', this.toggleSidebar);
+        }
+
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('main-nav');
+            const hero = document.querySelector('.hero-bg'); 
+            if(nav) {
+                let threshold = 50; 
+                if (hero) threshold = hero.offsetHeight - 80; 
+                if(window.scrollY > threshold) nav.classList.add('scrolled');
+                else nav.classList.remove('scrolled');
+            }
+        });
+    },
+
+    fixLeafletIcons() {
+        if(typeof L !== 'undefined' && L.Icon && L.Icon.Default) {
+            delete L.Icon.Default.prototype._getIconUrl;
+            L.Icon.Default.mergeOptions({
+                iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+                iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+                shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+            });
+        }
+    },
+}
