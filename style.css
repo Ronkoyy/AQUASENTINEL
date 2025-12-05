@@ -66,3 +66,52 @@ body {
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); position: relative; z-index: 2;
     border: 1px solid rgba(255,255,255,0.5);
 }
+/* Landing Page Icons */
+.icon-circle { width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 20px; }
+.icon-red { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+.icon-yellow { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+.icon-teal { background: rgba(20, 184, 166, 0.2); color: #14b8a6; }
+
+/* Glass Cards (Landing Crisis Section) */
+.glass-card {
+    background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px; padding: 40px 20px; text-align: center;
+    transition: transform 0.3s ease, background 0.3s ease;
+    box-shadow: var(--glass-shadow);
+}
+.glass-card:hover { transform: translateY(-10px); background: rgba(255, 255, 255, 0.15); }
+.glass-card h3 { color: #ffffff; font-size: 2.5rem; font-weight: 800; margin: 15px 0; }
+.glass-card p { color: #cbd5e1; font-size: 1rem; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
+
+/* Scroll Button */
+.scroll-down-btn { font-size: 2rem; color: white; animation: bounce 2s infinite; background: none; border: none; cursor: pointer; }
+@keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+/* Sections */
+.section { padding: 100px 20px; }
+.bg-white { background: #f8fafc; }
+.bg-dark { background: #0f172a; color: white; }
+.container { max-width: 1200px; margin: 0 auto; }
+.section-label { color: var(--primary); font-weight: 700; letter-spacing: 1px; font-size: 0.9rem; margin-bottom: 10px; display: block; }
+.section-heading { font-size: 2.8rem; font-weight: 700; margin-bottom: 20px; line-height: 1.1; color: #1f2937; }
+.white-text { color: white !important; }
+.info-text { font-size: 1.1rem; line-height: 1.8; color: #4b5563; margin-bottom: 30px; }
+.info-card { background: white; padding: 25px; border-left: 5px solid var(--primary); border-radius: 12px; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.05); }
+.info-image { width: 100%; border-radius: 24px; box-shadow: 0 20px 50px -10px rgba(0,0,0,0.2); }
+
+/* --- GLASS BUTTON (Join Initiative) --- */
+.cta-btn {
+    background: rgba(255, 255, 255, 0.1); 
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3); color: white;
+    padding: 18px 50px; border-radius: 50px;
+    font-size: 1.1rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;
+    cursor: pointer; transition: all 0.3s ease;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+.cta-btn:hover {
+    background: rgba(0, 150, 136, 0.3); border-color: #009688;
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 0 25px rgba(0, 150, 136, 0.5);
+}
