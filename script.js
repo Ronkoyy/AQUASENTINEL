@@ -514,4 +514,112 @@ const app = {
             iconSize: [30, 42], iconAnchor: [15, 42], popupAnchor: [0, -45]
         });
     },
-}
+
+      // =======================================================
+    // 7. PROFILE PAGE LOGIC
+    // =======================================================
+    loadProfile() {
+        const list = DataManager.get('aqua_reports').filter(x => x.userId === this.currentUser.email);
+        const tb = document.getElementById('history-table-body');
+        tb.innerHTML = '';
+        document.getElementById('empty-history-msg').style.display = list.length ? 'none' : 'block';
+        
+        list.forEach(x => {
+            let statusHtml = `<span style="background:#fee2e2; color:#991b1b; padding:4px 8px; border-radius:12px; font-size:0.75rem; font-weight:700;">PENDING</span>`;
+            
+            if (x.status === 'Resolved') {
+                if (x.type === 'pollution') {
+                    statusHtml = `<span style="background:#dcfce7; color:#166534; padding:4px 8px; border-radius:12px; font-size:0.75rem; font-weight:700;">CLEANED</span>`;
+                } else {
+                    statusHtml = `<span style="background:#e0f2fe; color:#0369a1; padding:4px 8px; border-radius:12px; font-size:0.75rem; font-weight:700;">VERIFIED</span>`;
+                }
+            }
+
+            tb.innerHTML += `<tr style="border-bottom:1px solid #e2e8f0">
+                <td style="padding:10px">
+                    <div style="font-weight:600;">${new Date(x.date).toLocaleDateString()}</div>
+                    ${statusHtml}
+                </td>
+                <td style="padding:10px">${x.placeName}</td>
+                <td style="padding:10px">${x.wasteType || x.species}</td>
+                <td style="padding:10px">
+                    <button onclick="app.editItem(${x.id})" class="action-btn-edit" style="color:#0ea5e9; font-weight:bold; margin-right:5px; border:none; background:none; cursor:pointer;">Edit</button>
+                    <button onclick="app.delItem(${x.id})" class="action-btn-delete" style="color:#ef4444; font-weight:bold; border:none; background:none; cursor:pointer;">Delete</button>
+                </td>
+            </tr>`;
+        });
+    },
+
+    editItem(id) { window.location.href = `report.html?edit=${id}`; },
+
+    delItem(id) {
+        this.deleteId = id; 
+        const modal = document.getElementById('delete-modal');
+        if(modal) modal.classList.remove('hidden-section');
+    },
+
+    confirmDelete() {
+        if (this.deleteId) {
+            DataManager.deleteReport(this.deleteId);
+            this.loadProfile();
+            this.showToast('Report Deleted Successfully', 'error');
+            this.closeDeleteModal();
+        }
+    },
+
+    closeDeleteModal() {
+        const modal = document.getElementById('delete-modal');
+        if(modal) modal.classList.add('hidden-section');
+        this.deleteId = null;
+    },
+
+    openEditProfile() {
+        const modal = document.getElementById('edit-profile-modal');
+        if(modal) {
+            modal.classList.remove('hidden-section');
+            document.getElementById('edit-name').value = this.currentUser.name;
+            document.getElementById('edit-email').value = this.currentUser.email;
+            document.getElementById('edit-bio').value = this.currentUser.bio || '';
+            document.getElementById('edit-birthday').value = this.currentUser.birthday || '';
+            document.getElementById('edit-age').value = this.currentUser.age || '';
+            document.getElementById('edit-password').value = '';
+        }
+    },
+    closeEditProfile() { document.getElementById('edit-profile-modal').classList.add('hidden-section'); },
+    
+    saveProfile() {
+        const newName = document.getElementById('edit-name').value;
+        const newBio = document.getElementById('edit-bio').value;
+        const newBday = document.getElementById('edit-birthday').value;
+        const newAge = document.getElementById('edit-age').value;
+        const newPwd = document.getElementById('edit-password').value;
+        const file = document.getElementById('edit-image').files[0];
+        
+        if(!newName) return alert("Name required");
+        
+        const performSave = (picUrl) => {
+            this.currentUser.name = newName;
+            this.currentUser.bio = newBio;
+            this.currentUser.birthday = newBday;
+            this.currentUser.age = newAge;
+            if(newPwd) this.currentUser.password = newPwd;
+            if(picUrl) this.currentUser.profilePic = picUrl; 
+
+            DataManager.updateUser(this.currentUser);
+            localStorage.setItem('aqua_user', JSON.stringify(this.currentUser));
+            this.updateUI(); 
+            this.closeEditProfile(); 
+            this.showToast("Profile Updated Successfully!");
+        };
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = function() { performSave(reader.result); }
+            reader.readAsDataURL(file);
+        } else {
+            performSave(null); 
+        }
+    }
+};
+
+window.onload = () => app.init();
