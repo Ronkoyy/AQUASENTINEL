@@ -144,4 +144,51 @@ const app = {
             if (!publicPages.includes(page)) window.location.href = 'login.html';
         }
     },
+
+        updateUI() {
+        if(!this.currentUser) return;
+
+        const userReports = DataManager.get('aqua_reports').filter(x => x.userId === this.currentUser.email).length;
+        let rank = "Volunteer Ranger";
+        if(userReports >= 5) rank = "Coastal Guardian";
+        if(userReports >= 15) rank = "Aqua Sentinel Elite";
+
+        const sbName = document.getElementById('user-name-display');
+        if(sbName) sbName.innerText = this.currentUser.name;
+
+        if (document.getElementById('profile-name')) {
+            document.getElementById('profile-name').innerText = this.currentUser.name;
+            document.querySelector('.role-text').innerText = rank; 
+            document.getElementById('display-bio').innerText = this.currentUser.bio || "No bio set yet.";
+            document.getElementById('display-birthday').innerText = this.currentUser.birthday || "-";
+            document.getElementById('display-age').innerText = this.currentUser.age || "-";
+
+            const pImg = document.getElementById('profile-img-large');
+             if (this.currentUser.profilePic && pImg) {
+                pImg.src = this.currentUser.profilePic;
+                pImg.style.display = 'block';
+                pImg.classList.remove('hidden-section');
+                document.getElementById('profile-initials-large').style.display = 'none';
+            }
+        }
+    },
+
+    toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.querySelector('.sidebar-overlay').classList.toggle('open');
+    },
+    
+    logout() { localStorage.removeItem('aqua_user'); window.location.href = 'index.html'; },
+
+    showToast(msg, type='success') {
+        const div = document.createElement('div');
+        div.className = 'toast';
+        div.style.background = type === 'success' ? '#10b981' : '#ef4444';
+        div.innerText = msg;
+        document.body.appendChild(div);
+        setTimeout(() => {
+            div.style.opacity = '0';
+            setTimeout(() => div.remove(), 300);
+        }, 3000);
+    },
 }
