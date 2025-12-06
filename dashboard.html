@@ -8,7 +8,9 @@
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -21,59 +23,102 @@
 
         <aside id="sidebar">
             <div class="sidebar-header">
-                <i class="fa-solid fa-water" style="color: var(--primary);"></i> <span>AquaSentinel</span>
+                <i class="fa-solid fa-water" style="color: var(--primary);"></i> 
+                <span>AquaSentinel</span>
                 <i class="fa-solid fa-xmark close-sidebar-btn" style="display: none;"></i>
             </div>
+            
             <nav class="nav-menu">
-                <a href="dashboard.html" class="menu-btn active-nav"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
-                <a href="map.html" class="menu-btn"><i class="fa-solid fa-map-location-dot"></i> Coastal Map</a>
-                <a href="report.html" class="menu-btn"><i class="fa-solid fa-pen-to-square"></i> Submit Report</a>
-                <a href="profile.html" class="menu-btn"><i class="fa-solid fa-user"></i> My Profile</a>
-                <button onclick="app.logout()" class="menu-btn logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+                <a href="dashboard.html" class="menu-btn active-nav">
+                    <i class="fa-solid fa-chart-pie"></i> Dashboard
+                </a>
+                <a href="map.html" class="menu-btn">
+                    <i class="fa-solid fa-map-location-dot"></i> Coastal Map
+                </a>
+                <a href="report.html" class="menu-btn">
+                    <i class="fa-solid fa-pen-to-square"></i> Submit Report
+                </a>
+                <a href="profile.html" class="menu-btn">
+                    <i class="fa-solid fa-user"></i> My Profile
+                </a>
+                <button onclick="app.logout()" class="menu-btn logout-btn">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </button>
             </nav>
         </aside>
 
         <main>
-            <div style="margin-bottom: 30px;">
-                <h2 class="page-title">Mission Dashboard</h2>
-                <p style="color: var(--text-light);">Welcome back, <span id="user-name-display" style="color: var(--primary); font-weight: 700;">Ranger</span> 👋</p>
+            <div style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: end;">
+                <div>
+                    <h2 class="page-title">Mission Dashboard</h2>
+                    <p style="color: var(--text-light);">
+                        Welcome back, <span id="user-name-display" style="color: var(--primary); font-weight: 700;">Ranger</span> 👋
+                    </p>
+                </div>
+                
+                <div id="dashboard-badge" class="badge-pill hidden-section" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 8px 16px; border-radius: 50px; font-size: 0.9rem; font-weight: 700; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3);">
+                    <i class="fa-solid fa-medal"></i> <span id="badge-text">Volunteer</span>
+                </div>
             </div>
 
             <div class="grid-3">
+                
                 <div class="card weather-widget">
                     <div class="widget-title"><i class="fa-solid fa-location-arrow"></i> LIVE CONDITIONS</div>
                     <div class="weather-flex">
-                        <div><span class="weather-temp">--°C</span><div class="weather-loc">Loading...</div></div>
+                        <div>
+                            <span class="weather-temp">--°C</span>
+                            <div class="weather-loc">Loading...</div>
+                        </div>
                         <i class="fa-solid fa-cloud-sun weather-icon"></i>
                     </div>
                 </div>
+
                 <div class="card stat-card red">
-                    <div><div class="stat-label">Pollution Reports</div><div class="stat-value" id="stat-pollution">0</div></div>
-                    <div class="stat-icon"><i class="fa-solid fa-trash-can"></i></div>
+                    <div>
+                        <div class="stat-label">Pollution Reports</div>
+                        <div class="stat-value" id="stat-pollution">0</div>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </div>
                 </div>
+
                 <div class="card stat-card teal">
-                    <div><div class="stat-label">Marine Sightings</div><div class="stat-value" id="stat-marine">0</div></div>
-                    <div class="stat-icon"><i class="fa-solid fa-fish-fins"></i></div>
+                    <div>
+                        <div class="stat-label">Marine Sightings</div>
+                        <div class="stat-value" id="stat-marine">0</div>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-fish-fins"></i>
+                    </div>
                 </div>
             </div>
 
             <div class="grid-2">
+                
                 <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                         <h3 style="font-size: 1.1rem; font-weight: 700;">Waste Analysis</h3>
-                        <button class="btn-outline" onclick="app.openWasteDetails()" style="padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; cursor: pointer;">
-                                View Details
+                        <button class="btn-outline" onclick="app.openWasteDetails()" style="padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; border: 1px solid #cbd5e1; background: white;">
+                            View Details
                         </button>
                     </div>
-                    <div class="chart-container"><canvas id="wasteChart"></canvas></div>
+                    <div class="chart-container">
+                        <canvas id="wasteChart"></canvas>
+                    </div>
                 </div>
+
                 <div class="card">
                     <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 20px;">Recent Activity</h3>
-                    <div id="activity-feed" class="feed-container"></div>
+                    <div id="activity-feed" class="feed-container">
+                        </div>
                 </div>
+
             </div>
         </main>
     </div>
+
     <div id="waste-modal" class="modal-overlay hidden-section">
         <div class="modal-content" style="max-width: 400px;">
             <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -86,6 +131,7 @@
             <button onclick="app.closeWasteModal()" class="btn btn-primary" style="width: 100%; margin-top: 25px;">Close</button>
         </div>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>

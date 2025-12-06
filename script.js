@@ -1,3 +1,7 @@
+// =======================================================
+// 1. DATA MODELS & STORAGE (OOP)
+// =======================================================
+
 class Report {
     constructor(id, date, location, placeName, userId, type, image, status, condition) {
         this.id = id;
@@ -13,14 +17,16 @@ class Report {
 }
 
 class User {
-    constructor(name, email, password, bio = "", birthday = "", age = "", profilePic = "") {
+    // 🆕 ADDED: 'rank' parameter
+    constructor(name, email, password, bio = "", birthday = "", age = "", profilePic = "", rank = "Volunteer Ranger") {
         this.name = name;
         this.email = email;
         this.password = password;
         this.bio = bio;
         this.birthday = birthday;
         this.age = age;
-        this.profilePic = profilePic || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1780&auto=format&fit=crop"; 
+        this.profilePic = profilePic || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1780&auto=format&fit=crop";
+        this.rank = rank; // Store rank persistently
     }
 }
 
@@ -48,6 +54,7 @@ class DataManager {
         users.push(u); this.set('aqua_users', users); return true; 
     }
     static validateUser(e, p) { return this.get('aqua_users').find(u => u.email === e && u.password === p); }
+    
     static updateUser(u) {
         const users = this.get('aqua_users');
         const idx = users.findIndex(x => x.email === u.email);
@@ -55,6 +62,9 @@ class DataManager {
     }
 }
 
+// =======================================================
+// 2. CORE APP CONTROLLER
+// =======================================================
 const app = {
     currentUser: null, map: null, chart: null, markers: [], editingId: null, tempMarker: null, deleteId: null,
 
@@ -110,7 +120,7 @@ const app = {
         }
     },
 
-        getWeatherIcon(condition) {
+    getWeatherIcon(condition) {
         const main = condition.toLowerCase();
         switch (main) {
             case 'clear': return 'fa-solid fa-sun';
@@ -145,20 +155,23 @@ const app = {
         }
     },
 
-        updateUI() {
+    updateUI() {
         if(!this.currentUser) return;
-
-        const userReports = DataManager.get('aqua_reports').filter(x => x.userId === this.currentUser.email).length;
-        let rank = "Volunteer Ranger";
-        if(userReports >= 5) rank = "Coastal Guardian";
-        if(userReports >= 15) rank = "Aqua Sentinel Elite";
 
         const sbName = document.getElementById('user-name-display');
         if(sbName) sbName.innerText = this.currentUser.name;
 
+        // 🏆 DASHBOARD BADGE LOGIC
+        const dashBadge = document.getElementById('dashboard-badge');
+        if(dashBadge) {
+            dashBadge.classList.remove('hidden-section');
+            document.getElementById('badge-text').innerText = this.currentUser.rank || "Volunteer Ranger";
+        }
+
         if (document.getElementById('profile-name')) {
             document.getElementById('profile-name').innerText = this.currentUser.name;
-            document.querySelector('.role-text').innerText = rank; 
+            // Use stored rank
+            document.querySelector('.role-text').innerText = this.currentUser.rank || "VOLUNTEER RANGER"; 
             document.getElementById('display-bio').innerText = this.currentUser.bio || "No bio set yet.";
             document.getElementById('display-birthday').innerText = this.currentUser.birthday || "-";
             document.getElementById('display-age').innerText = this.currentUser.age || "-";
@@ -173,6 +186,26 @@ const app = {
         }
     },
 
+    // 🏆 FEATURE: CHECK FOR PROMOTION
+    checkRankUpgrade() {
+        const userReports = DataManager.get('aqua_reports').filter(x => x.userId === this.currentUser.email).length;
+        let newRank = "Volunteer Ranger";
+        
+        if(userReports >= 5) newRank = "Coastal Guardian";
+        if(userReports >= 15) newRank = "Aqua Sentinel Elite";
+
+        // If rank changed, save it and show notification
+        if (newRank !== this.currentUser.rank) {
+            this.currentUser.rank = newRank;
+            DataManager.updateUser(this.currentUser); // Save to DB
+            localStorage.setItem('aqua_user', JSON.stringify(this.currentUser)); // Update session
+            
+            // Trigger Gold Notification
+            this.showToast(`🎉 PROMOTED! You are now a ${newRank}!`, 'upgrade');
+            this.updateUI();
+        }
+    },
+
     toggleSidebar() {
         document.getElementById('sidebar').classList.toggle('open');
         document.querySelector('.sidebar-overlay').classList.toggle('open');
@@ -182,8 +215,13 @@ const app = {
 
     showToast(msg, type='success') {
         const div = document.createElement('div');
-        div.className = 'toast';
-        div.style.background = type === 'success' ? '#10b981' : '#ef4444';
+        div.className = `toast ${type}`; // Add type class
+        
+        // Default styling logic (overridden by CSS for 'upgrade')
+        if (type !== 'upgrade') {
+            div.style.background = type === 'success' ? '#10b981' : '#ef4444';
+        }
+        
         div.innerText = msg;
         document.body.appendChild(div);
         setTimeout(() => {
@@ -192,7 +230,7 @@ const app = {
         }, 3000);
     },
 
-        login(e) {
+    login(e) {
         e.preventDefault();
         const email = document.getElementById('login-email').value;
         const pwd = document.getElementById('login-password').value;
@@ -208,7 +246,7 @@ const app = {
         }
     },
 
-        signup(e) {
+    signup(e) {
         e.preventDefault();
         const u = new User(
             document.getElementById('signup-name').value,
@@ -221,7 +259,7 @@ const app = {
         } else { alert('Email exists'); }
     },
 
-       loadDash() {
+    loadDash() {
         const allReports = DataManager.get('aqua_reports');
         const r = allReports.filter(x => x.userId === this.currentUser.email);
 
@@ -283,7 +321,6 @@ const app = {
             .catch(err => console.error("Weather Error:", err));
     },
 
-    // WASTE DETAILS MODAL LOGIC
     openWasteDetails() {
         const allReports = DataManager.get('aqua_reports');
         const myPollution = allReports.filter(x => x.userId === this.currentUser.email && x.type === 'pollution');
@@ -389,6 +426,10 @@ const app = {
                 DataManager.saveReport(newObj);
                 this.showToast('Report Saved Successfully!');
             }
+            
+            // ✅ CHECK FOR PROMOTION
+            this.checkRankUpgrade();
+            
             setTimeout(() => window.location.href = 'map.html', 1000);
         };
 
@@ -451,8 +492,6 @@ const app = {
 
     cancelEdit() { window.location.href = 'report.html'; },
 
-       // 6. MAP PAGE LOGIC
-    // =======================================================
     loadMap() {
         if(!this.map) {
             this.map = L.map('map').setView([8.37, 124.86], 11); 
@@ -469,7 +508,8 @@ const app = {
                     .openPopup();
             });
         }
-                setTimeout(() => { this.map.invalidateSize(); }, 200);
+
+        setTimeout(() => { this.map.invalidateSize(); }, 200);
 
         this.markers.forEach(m => this.map.removeLayer(m));
         this.markers = [];
@@ -507,17 +547,6 @@ const app = {
         }
     },
 
-    createPin(color) {
-        return L.divIcon({
-            className: 'bg-transparent',
-            html: `<i class="fa-solid fa-location-dot fa-3x" style="color: ${color}; filter: drop-shadow(3px 5px 2px rgba(0,0,0,0.3)); display:block;"></i>`,
-            iconSize: [30, 42], iconAnchor: [15, 42], popupAnchor: [0, -45]
-        });
-    },
-
-      // =======================================================
-    // 7. PROFILE PAGE LOGIC
-    // =======================================================
     loadProfile() {
         const list = DataManager.get('aqua_reports').filter(x => x.userId === this.currentUser.email);
         const tb = document.getElementById('history-table-body');
